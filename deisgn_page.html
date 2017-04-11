@@ -1,0 +1,512 @@
+    <!DOCTYPE html>
+    <html lang="en" ng-app="uiComponentDesignApp">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>UI Component Designer</title>
+        <!--CSS-->
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="assets/css/prism.css">
+        <link rel="stylesheet" href="assets/css/md-data-table.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+    </head>
+    <body ng-controller="uiComponentDesignAppCtrl">
+
+    <header>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" aria-label="Settings" href="index.html">
+                    <md-icon>
+                        <i class="material-icons">arrow_back</i>
+                    </md-icon>
+                </md-button>
+
+                <h2 flex md-truncate>Data Table</h2>
+
+                <md-button class="md-icon-button" aria-label="Favorite">
+                    <md-icon md-svg-icon="img/icons/favorite.svg" style="color: greenyellow;"></md-icon>
+                </md-button>
+
+                <md-button class="md-icon-button" aria-label="More">
+                    <md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+    </header>
+    <main>
+        <md-content layout layout-align="center center">
+            <div flex="90" layout layout-align="start start" layout-wrap>
+                <div layout flex="70" layout-wrap>
+                    <div flex="100">
+                        <md-card class="card-preview">
+                            <md-card-title>
+                                <div class="md-title">
+                                    Preview
+                                </div>
+                            </md-card-title>
+                            <md-card-content>
+                                <div id="htmlPreview" >
+                                    <md-card>
+                                        <md-toolbar ng-if="config.isTableTitle || config.isActionItems" class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
+                                            <div class="md-toolbar-tools">
+                                                <div ng-if="!showFilter" layout layout-align="space-between center" layout-fill>
+                                                    <span  ng-if="config.isTableTitle"  auto-id="automation_sidenav_card_title_001">Data Table Title</span>
+                                                    <span flex></span>
+                                                    <div>
+                                                        <md-button ng-if="config.isActionItems && config.isFilter" class="md-icon-button" ng-click="showFilter = true">
+                                                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                                                Filter
+                                                            </md-tooltip>
+                                                            <md-icon>filter_list</md-icon>
+                                                        </md-button>
+                                                        <md-button ng-if="config.isActionItems && config.isRefresh" auto-id="automation_action_button_001" class="md-icon-button" ng-click="loadStuff()">
+                                                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                                                Refresh
+                                                            </md-tooltip>
+                                                            <md-icon>refresh</md-icon>
+                                                        </md-button>
+                                                        <md-button ng-if="config.isActionItems && config.isAdd" auto-id="automation_action_button_001" class="md-icon-button" ng-click="">
+                                                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                                                Add
+                                                            </md-tooltip>
+                                                            <md-icon>add</md-icon>
+                                                        </md-button>
+                                                        <md-button ng-if="config.isActionItems && config.isVerticalMore" auto-id="automation_action_button_001" class="md-icon-button" ng-click="">
+                                                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                                                More
+                                                            </md-tooltip>
+                                                            <md-icon>more_vert</md-icon>
+                                                        </md-button>
+                                                        <md-button ng-repeat="icon in icons" ng-if="config.isActionItems && icon.selectedLibraryIcon"  auto-id="automation_action_button_001" class="md-icon-button" ng-click="">
+                                                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                                                {{icon.label}}
+                                                            </md-tooltip>
+                                                            <md-icon>{{icon.iconValue}}</md-icon>
+                                                        </md-button>
+                                                    </div>
+                                                </div>
+
+                                                <div ng-if="showFilter" class="table-filter-wrap" layout layout-align="start center" layout-fill >
+                                                    <md-icon>
+                                                        <i class="material-icons">search</i>
+                                                    </md-icon>
+                                                    <input id="taskFilterInput" ng-keyup="onKeyUp($event)" ng-model="filterInput" flex type="text" placeholder="Filter Placeholder">
+                                                    <md-button class="md-icon-button" ng-click="show = false" >
+                                                        <md-tooltip md-direction="bottom" md-delay="1000">
+                                                            Close
+                                                        </md-tooltip>
+                                                        <md-icon>
+                                                            <i class="material-icons">close</i>
+                                                        </md-icon>
+                                                    </md-button>
+                                                </div>
+                                            </div>
+                                        </md-toolbar>
+
+                                        <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
+                                            <div class="md-toolbar-tools">
+                                                <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
+                                            </div>
+                                        </md-toolbar>
+
+                                        <md-table-container>
+                                            <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
+                                                <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                                                <tr md-row>
+                                                    <th md-column md-order-by=""><span>Column Header</span></th>
+                                                    <th md-column md-numeric md-order-by="">Column Header</th>
+                                                    <th md-column md-numeric md-order-by="">Column Header</th>
+                                                    <th md-column ng-if="config.isRowActionItems"> </th>
+                                                </tr>
+                                                </thead>
+                                                <tbody md-body>
+                                                <tr md-row md-select="task" class="dt-row" md-on-select="logItem" md-auto-select="options.autoSelect"  >
+                                                    <td md-cell></td>
+                                                    <td md-cell></td>
+                                                    <td md-cell></td>
+                                                    <td md-cell class="action-block" data-ng-if="config.isRowActionItems">
+                                                        <div>
+
+                                                            <md-button data-ng-if="config.isEdit" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Edit
+                                                                </md-tooltip>
+                                                                <md-icon>
+                                                                    <i class="material-icons">edit</i>
+                                                                </md-icon>
+
+                                                            </md-button>
+                                                            <md-button data-ng-if="config.isFavorite" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Favourite
+                                                                </md-tooltip>
+                                                                <md-icon ng-hide="favoriteStatus">
+                                                                    <i class="material-icons">star_border</i>
+                                                                </md-icon>
+                                                                <md-icon ng-show="favoriteStatus">
+                                                                    <i class="material-icons">star</i>
+                                                                </md-icon>
+                                                            </md-button>
+                                                            <md-button data-ng-if="config.isDelete" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Delete
+                                                                </md-tooltip>
+                                                                <md-icon>
+                                                                    <i class="material-icons">delete</i>
+                                                                </md-icon>
+                                                            </md-button>
+                                                            <md-menu data-ng-if="config.isMore" class="menu-help" md-position-mode="target-right target">
+                                                                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                                                                    <md-icon>
+                                                                        <i class="material-icons">more_vert</i>
+                                                                    </md-icon>
+                                                                </md-button>
+                                                                <md-menu-content width="3" class="table-menu">
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                                                <span>
+                                                                                    <md-icon>
+                                                                                        <i class="material-icons">edit</i>
+                                                                                    </md-icon>
+                                                                                </span>
+                                                                                <span>Edit</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                            <span>
+                                                                <md-icon>
+                                                                    <i class="material-icons">delete</i>
+                                                                </md-icon>
+                                                            </span>
+                                                                                <span>Delete</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                            <span>
+                                                                <md-icon>
+                                                                    <i class="material-icons">file_upload</i>
+                                                                </md-icon>
+                                                            </span>
+                                                                                <span>Export</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                                        <span>
+                                                                            <md-icon>
+                                                                                <i class="material-icons">equalizer</i>
+                                                                            </md-icon>
+                                                                        </span>
+                                                                                <span>Manage Versions</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                </md-menu-content>
+                                                            </md-menu>
+                                                        </div>
+
+                                                    </td>
+                                                </tr>
+                                                <tr md-row md-select="task" class="dt-row" md-on-select="logItem" md-auto-select="options.autoSelect"  >
+                                                    <td md-cell></td>
+                                                    <td md-cell></td>
+                                                    <td md-cell></td>
+                                                    <td md-cell class="action-block" data-ng-if="config.isRowActionItems">
+                                                        <div>
+
+                                                            <md-button data-ng-if="config.isEdit" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Edit
+                                                                </md-tooltip>
+                                                                <md-icon>
+                                                                    <i class="material-icons">edit</i>
+                                                                </md-icon>
+
+                                                            </md-button>
+                                                            <md-button data-ng-if="config.isFavorite" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Favourite
+                                                                </md-tooltip>
+                                                                <md-icon ng-hide="favoriteStatus">
+                                                                    <i class="material-icons">star_border</i>
+                                                                </md-icon>
+                                                                <md-icon ng-show="favoriteStatus">
+                                                                    <i class="material-icons">star</i>
+                                                                </md-icon>
+                                                            </md-button>
+                                                            <md-button data-ng-if="config.isDelete" ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                                                <md-tooltip md-direction="bottom">
+                                                                    Delete
+                                                                </md-tooltip>
+                                                                <md-icon>
+                                                                    <i class="material-icons">delete</i>
+                                                                </md-icon>
+                                                            </md-button>
+                                                            <md-menu data-ng-if="config.isMore" class="menu-help" md-position-mode="target-right target">
+                                                                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                                                                    <md-icon>
+                                                                        <i class="material-icons">more_vert</i>
+                                                                    </md-icon>
+                                                                </md-button>
+                                                                <md-menu-content width="3" class="table-menu">
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                                                <span>
+                                                                                    <md-icon>
+                                                                                        <i class="material-icons">edit</i>
+                                                                                    </md-icon>
+                                                                                </span>
+                                                                                <span>Edit</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                            <span>
+                                                                <md-icon>
+                                                                    <i class="material-icons">delete</i>
+                                                                </md-icon>
+                                                            </span>
+                                                                                <span>Delete</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                            <span>
+                                                                <md-icon>
+                                                                    <i class="material-icons">file_upload</i>
+                                                                </md-icon>
+                                                            </span>
+                                                                                <span>Export</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                    <md-menu-item>
+                                                                        <md-button >
+                                                                            <div>
+                                                                        <span>
+                                                                            <md-icon>
+                                                                                <i class="material-icons">equalizer</i>
+                                                                            </md-icon>
+                                                                        </span>
+                                                                                <span>Manage Versions</span>
+                                                                            </div>
+                                                                        </md-button>
+                                                                    </md-menu-item>
+                                                                </md-menu-content>
+                                                            </md-menu>
+                                                        </div>
+
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </md-table-container>
+                                        <div ng-if="tableFooter == 'isPagination'">
+                                            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{count}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
+                                        </div>
+
+                                    </md-card>
+                                    <div ng-if="tableFooter == 'isLoadMore'">
+                                        <div layout layout-align="center center">
+                                            <md-button class="md-primary md-button md-raised">Load More</md-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </md-card-content>
+                            <md-card-actions layout layout-align="end center"s>
+                                <md-button class="md-raised md-primary" ng-click="isGenerateCode = true; generateCode()">
+                                    Generate Code
+                                </md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
+
+                    <div flex="100" ng-show="isGenerateCode">
+                        <md-card>
+                            <md-card-content>
+                                <md-tabs md-dynamic-height md-border-bottom>
+                                    <md-tab label="HTML">
+                                        <md-content class="md-padding">
+                                            <pre data-lang="HTML">
+                                                <code class="language-html" id="codeHTML">
+
+                                                    {{htmlConverted}}
+
+                                                </code>
+                                            </pre>
+
+
+                                        </md-content>
+                                    </md-tab>
+                                    <md-tab label="CSS">
+                                        <md-content class="md-padding">
+                                            <pre data-lang="CSS" >
+                                                <code class="language-css" id="codeCSS">
+                                                    {{cssFile}}
+                                                </code>
+                                            </pre>
+
+                                        </md-content>
+                                    </md-tab>
+                                    <md-tab label="JS">
+                                        <md-content class="md-padding">
+                                            <div>
+                                                <pre data-lang="JS" >
+                                                    <code class="language-js">
+                                                        {{jsFile}}
+                                                    </code>
+                                                </pre>
+                                            </div>
+
+                                        </md-content>
+                                    </md-tab>
+                                </md-tabs>
+                            </md-card-content>
+                        </md-card>
+                    </div>
+                </div>
+                <div layout flex="30"  layout-align="start center">
+                    <md-card flex class="card-config">
+                        <md-card-content layout-padding>
+                            <div class="md-title">Configurations</div>
+                            <div>
+                                <div class="md-subhead">
+                                    Table Header
+                                </div>
+                                <md-divider layout-padding></md-divider>
+                                <div>
+                                    <div>
+                                        <md-checkbox ng-model="config.isTableTitle">
+                                            Table Title
+                                        </md-checkbox>
+                                    </div>
+                                    <div>
+                                        <md-checkbox ng-model="config.isActionItems">
+                                            Header Action Items
+                                        </md-checkbox>
+                                        <div class="sub-items">
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isActionItems" ng-model="config.isVerticalMore">Vertical More</md-checkbox>
+                                            </div>
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isActionItems" ng-model="config.isFilter">Filter</md-checkbox>
+                                            </div>
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isActionItems" ng-model="config.isRefresh">Refresh</md-checkbox>
+                                            </div>
+
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isActionItems" ng-model="config.isAdd">Add</md-checkbox>
+                                            </div>
+                                            <div ng-show="selectedIconVal">
+                                                <div ng-repeat="icon in icons">
+                                                    <md-checkbox ng-if="icon.selected" ng-disabled="!config.isActionItems" ng-init="selectedIconVal.iconValue = icon.iconValue" ng-model="icon.selectedLibraryIcon">{{icon.label}}</md-checkbox>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <md-button ng-disabled="!config.isActionItems" class="md-primary md-button" ng-click="iconLibrary($event)">
+                                                    <md-icon>
+                                                        <i class="material-icons">add</i>
+                                                    </md-icon>
+                                                    Add More
+                                                </md-button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="md-subhead">
+                                    Table Body
+                                </div>
+                                <md-divider layout-padding></md-divider>
+                                <div>
+                                    <div>
+                                        <md-checkbox ng-model="options.rowSelection">
+                                            Row Checkboxes
+                                        </md-checkbox>
+                                    </div>
+                                    <div>
+                                        <md-checkbox ng-model="config.isRowActionItems">
+                                            Row Action Items
+                                        </md-checkbox>
+                                        <div class="sub-items">
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isRowActionItems" ng-model="config.isEdit">Edit</md-checkbox>
+                                            </div>
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isRowActionItems" ng-model="config.isDelete">Delete</md-checkbox>
+                                            </div>
+                                            <div>
+                                                <md-checkbox ng-disabled="!config.isRowActionItems" ng-model="config.isFavorite">Favorite</md-checkbox>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="md-subhead">
+                                    Footer
+                                </div>
+                                <md-divider layout-padding></md-divider>
+                                <div>
+                                    <md-radio-group  ng-model="tableFooter">
+                                        <md-radio-button value="isPagination">Pagination</md-radio-button>
+                                        <md-radio-button value="isLoadMore">Load More</md-radio-button>
+                                        <md-radio-button value="isInfinity">Inifinity Scroll</md-radio-button>
+                                    </md-radio-group>
+
+                                </div>
+                            </div>
+
+                        </md-card-content>
+                    </md-card>
+
+                </div>
+            </div>
+        </md-content>
+
+
+    </main>
+    <footer></footer>
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+    <!-- Angular Material Library -->
+    <script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+    <script src="assets/js/prism.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.0/clipboard.min.js"></script>
+    <script src="assets/js/md-data-table.js"></script>
+    <script src="app.js"></script>
+    <script>
+        var btn = document.getElementById('btn');
+        var clipboard = new Clipboard(btn);
+        clipboard.on('success', function(e) {
+            console.log(e);
+        });
+        clipboard.on('error', function(e) {
+            console.log(e);
+        });
+    </script>
+    </body>
+    </html>

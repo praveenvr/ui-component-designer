@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="uiComponentDesignApp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>UI Component Designer</title>
+    <!--CSS-->
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/prism.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body ng-controller="uiComponentDesignAppCtrl">
+
+<header>
+    <md-toolbar class="md-tall md-primary" layout layout-align="center center">
+        <div class="" layout layout-align="center center">
+            
+            <div>
+                <img src="assets/images/HCD_logo.png" alt="">
+            </div>
+        </div>
+    </md-toolbar>
+    <div class="wrap-global-search" flex="100">
+        <div class="search-icon">
+            <md-icon>
+                <i class="material-icons">search</i>
+            </md-icon>
+        </div>
+        <input type="text" class="global-search" ng-model="globalSearchInput" placeholder="Search">
+    </div>
+</header>
+<main>
+    <md-content layout layout-align="center center">
+        <div flex="80" layout layout-wrap>
+            <div flex-gt-sm="25" ng-repeat="component in componentsList | filter : globalSearchInput">
+                <a href="{{component.url}}" class="component-card">
+                <md-card flex>
+                    <md-card-title layout layout-align="space-between center">
+                        <div class="md-subhead">{{component.label}}</div>
+                        <div>
+                            <md-button class="md-icon-button" href="{{component.url}}">
+                                <md-icon>
+                                    <i class="material-icons">keyboard_arrow_right</i>
+                                </md-icon>
+                            </md-button>
+                        </div>
+                    </md-card-title>
+                </md-card>
+                </a>
+            </div>
+        </div>
+    </md-content>
+</main>
+<footer></footer>
+
+<!-- Angular Material requires Angular.js Libraries -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+
+<!-- Angular Material Library -->
+<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+<script src="assets/js/md-data-table.js"></script>
+<script src="assets/js/prism.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+table.md-table:not(.md-row-select) td.md-cell:nth-child(n+2):nth-last-child(n+2), table.md-table:not(.md-row-select) th.md-column:nth-child(n+2):nth-last-child(n+2){
+    padding:0 10px;
+}
+table.md-table td.md-cell.md-numeric, table.md-table th.md-column.md-numeric{
+    text-align: center;
+}
+.table-filter-wrap input, .table-filter-wrap input:focus{
+    border:none;
+    outline:none;
+    padding:0 15px;
+    font-size: 14px;
+    background-color: transparent;
+}
+.table-menu md-menu-item{
+    height: auto;
+    min-height:0;
+}
+.table-menu md-menu-item>.md-button md-icon{
+    margin-right:5px;
+}
+.table-menu md-menu-item>.md-button{
+    font-style: 13px;
+}
+.table-menu md-menu-item>.md-button md-icon i{
+    font-size: 20px;
+}
+.action-block md-icon i{
+    font-size: 20px;
+}
+.action-block .md-button.md-icon-button{
+    margin:0;
+}
+.action-block > div{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}

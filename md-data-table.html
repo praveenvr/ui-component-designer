@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>md-data-table</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+    <div id="htmlPreview">
+        <md-card>
+            <md-toolbar class="md-table-toolbar md-default" ng-hide="options.rowSelection && selected.length">
+                <div class="md-toolbar-tools">
+                    <div ng-hide="show" layout layout-align="space-between center" layout-fill>
+                        <span auto-id="automation_sidenav_card_title_001">All Tasks</span>
+                        <div>
+                            <md-button class="md-icon-button" ng-click="show = true; focusFilterTaskInput()">
+                                <md-tooltip md-direction="bottom" md-delay="1000">
+                                    Search Tasks
+                                </md-tooltip>
+                                <md-icon>filter_list</md-icon>
+                            </md-button>
+                            <md-button auto-id="automation_action_button_001" class="md-icon-button" ng-click="loadStuff()">
+                                <md-tooltip md-direction="bottom" md-delay="1000">
+                                    Refresh All Tasks
+                                </md-tooltip>
+                                <md-icon>refresh</md-icon>
+                            </md-button>
+                        </div>
+                    </div>
+
+                    <div class="table-filter-wrap" layout layout-align="start center" layout-fill ng-show="show">
+                        <md-icon>
+                            <i class="material-icons">search</i>
+                        </md-icon>
+                        <input id="taskFilterInput" ng-keyup="onKeyUp($event)" ng-model="filterInput" flex type="text" placeholder="Search Tasks">
+                        <md-button class="md-icon-button" ng-click="show = false" >
+                            <md-tooltip md-direction="bottom" md-delay="1000">
+                                Close
+                            </md-tooltip>
+                            <md-icon>
+                                <i class="material-icons">close</i>
+                            </md-icon>
+                        </md-button>
+                    </div>
+                </div>
+            </md-toolbar>
+
+            <md-toolbar class="md-table-toolbar alternate" ng-show="options.rowSelection && selected.length">
+                <div class="md-toolbar-tools">
+                    <span>{{selected.length}} {{selected.length > 1 ? 'items' : 'item'}} selected</span>
+                </div>
+            </md-toolbar>
+
+            <md-table-container>
+                <table md-table md-row-select="options.rowSelection" multiple="{{options.multiSelect}}" ng-model="selected" md-progress="promise">
+                    <thead ng-if="!options.decapitate" md-head md-order="query.order" md-on-reorder="logOrder">
+                    <tr md-row>
+                        <th md-column md-order-by="name"><span>Name & Description</span></th>
+                        <th md-column md-order-by="ledate"><span>Last Execution Date</span></th>
+                        <th md-column md-order-by="eby" md-desc><span>Executed By</span></th>
+                        <th md-column md-numeric md-order-by="totale"><span>Total Execution</span></th>
+                        <th md-column md-numeric md-order-by="lamonth"><span>Last Month</span></th>
+                        <th md-column ></th>
+                    </tr>
+                    </thead>
+                    <tbody md-body>
+                    <tr md-row md-select="task" class="dt-row" md-on-select="logItem" md-auto-select="options.autoSelect"  ng-repeat="task in tasks.data | filter: filterInput | orderBy: query.order | limitTo: query.limit : (query.page -1) * query.limit">
+                        <td md-cell class="item-name">
+                            <md-icon>
+                                <i class="material-icons">check_circle</i>
+                            </md-icon>
+                            <div>
+                                <a href="#">{{task.name}}</a>
+                                <span>{{task.desc}}</span>
+                            </div>
+                        </td>
+                        <td md-cell>{{task.ledate}}</td>
+                        <td md-cell><a href="#">{{task.eby}}</a></td>
+                        <td md-cell>{{task.totale}}</td>
+                        <td md-cell>{{task.lamonth}}</td>
+                        <td md-cell  class="action-block">
+                            <div>
+                                <md-button ng-click="favoriteStatus = !favoriteStatus" class="md-icon-button" toggle-class="selected">
+                                    <md-tooltip md-direction="bottom">
+                                        Favourite
+                                    </md-tooltip>
+                                    <md-icon ng-hide="favoriteStatus">
+                                        <i class="material-icons">star_border</i>
+                                    </md-icon>
+                                    <md-icon ng-show="favoriteStatus">
+                                        <i class="material-icons">star</i>
+                                    </md-icon>
+                                </md-button>
+                                <md-menu class="menu-help" md-position-mode="target-right target">
+                                    <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                                        <md-icon>
+                                            <i class="material-icons">more_vert</i>
+                                        </md-icon>
+                                    </md-button>
+                                    <md-menu-content width="3" class="table-menu">
+                                        <md-menu-item>
+                                            <md-button >
+                                                <div>
+                                                        <span>
+                                                            <md-icon>
+                                                                <i class="material-icons">edit</i>
+                                                            </md-icon>
+                                                        </span>
+                                                    <span>Edit</span>
+                                                </div>
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button >
+                                                <div>
+                                                        <span>
+                                                            <md-icon>
+                                                                <i class="material-icons">delete</i>
+                                                            </md-icon>
+                                                        </span>
+                                                    <span>Delete</span>
+                                                </div>
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button >
+                                                <div>
+                                                        <span>
+                                                            <md-icon>
+                                                                <i class="material-icons">file_upload</i>
+                                                            </md-icon>
+                                                        </span>
+                                                    <span>Export</span>
+                                                </div>
+                                            </md-button>
+                                        </md-menu-item>
+                                        <md-menu-item>
+                                            <md-button >
+                                                <div>
+                                                        <span>
+                                                            <md-icon>
+                                                                <i class="material-icons">equalizer</i>
+                                                            </md-icon>
+                                                        </span>
+                                                    <span>Manage Versions</span>
+                                                </div>
+                                            </md-button>
+                                        </md-menu-item>
+                                    </md-menu-content>
+                                </md-menu>
+                            </div>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </md-table-container>
+
+            <md-table-pagination md-limit="query.limit" md-limit-options="limitOptions" md-page="query.page" md-total="{{tasks.count}}" md-page-select="options.pageSelect" md-boundary-links="options.boundaryLinks" md-on-paginate="logPagination"></md-table-pagination>
+        </md-card>
+    </div>
+</body>
+</html>

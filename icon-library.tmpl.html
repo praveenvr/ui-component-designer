@@ -1,0 +1,55 @@
+<md-dialog class="icon-library-dialog">
+    <form ng-submit="selectedIcon(iconset)" >
+    <md-toolbar layout layout-align="space-between center">
+        <div layout layout-align="space-between center" layout-fill>
+            <span class="md-title" layout layout-align="start center" >
+
+                <div layout-padding>Icon Library</div>
+                </span>
+            <md-button class="md-icon-button" ng-click="closeDialog()">
+                <md-icon>
+                    <i class="material-icons">close</i>
+                </md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content layout-padding>
+        <div layout layout-align="start start" layout-wrap layout-padding>
+            <div layout flex="100">
+                <md-input-container flex>
+                    <input type="text" ng-model="iconFilterInput" placeholder="Filter Icons">
+                </md-input-container>
+            </div>
+            <div layout layout-align="start center" layout-wrap flex="100" layout-padding>
+
+
+
+                <div flex="20" ng-repeat="icon in icons | filter : iconFilterInput">
+                    <div layout layout-wrap layout-padding layout-align="center center" class="icon-wrapper" ng-click="icon.selected = !icon.selected;" ng-class="{'selected-icon':icon.selected}">
+                        <div class="selected-icon-highlight" ng-show="icon.selected">
+                            <md-icon>
+                                <i class="material-icons">check_circle</i>
+                            </md-icon>
+                        </div>
+                        <div layout layout-align="center center">
+                            <md-icon>
+                                <i class="material-icons">{{icon.iconValue}}</i>
+                            </md-icon>
+                        </div>
+                        <input ng-if="icon.selected" type="hidden" ng-init="iconset.icon = icon.iconValue" ng-model="iconset.icon">
+
+                        <span flex="100" class="md-subhead">{{icon.label}}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </md-dialog-content>
+    <md-dialog-actions>
+        <md-button class="md-primary md-button md-raised" type="submit">
+            Select
+        </md-button>
+        <md-button class="md-button md-primary" ng-click="closeDialog()">Cancel</md-button>
+    </md-dialog-actions>
+    </form>
+</md-dialog>
